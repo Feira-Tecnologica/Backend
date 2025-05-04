@@ -7,7 +7,7 @@ class ExemploController {
     public function listarUsuarios() {
         require_once __DIR__ . '/../Config/connection.php';
 
-        $stmt = $conn->prepare("SELECT * FROM usuarios");
+        $stmt = $conn->prepare("SELECT * FROM alunos");
         $stmt->execute();
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
