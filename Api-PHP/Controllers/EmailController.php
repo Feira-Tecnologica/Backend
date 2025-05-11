@@ -53,4 +53,3 @@ class EmailController {
             echo json_encode(["erro" => "Erro ao enviar o e-mail: {$mail->ErrorInfo}"]);
         }
     }
-}
