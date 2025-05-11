@@ -1,6 +1,8 @@
+
 <?php
 require_once __DIR__ . '/../Controllers/ExemploController.php';
 require_once __DIR__ . '/../Controllers/LoginController.php';
+require_once __DIR__ . '/../Controllers/EmailController.php';
 require_once __DIR__ . '/../Controllers/CadastroProjetosController.php';
 
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
@@ -10,6 +12,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $exemploController = new ExemploController();
 $loginController = new LoginController();
 $cadastroProjetoController = new CadastroProjetoController();
+$emailController = new EmailController();
 
 if ($uri == '/api' && $method == 'GET') {
     $exemploController->index();
@@ -19,6 +22,8 @@ if ($uri == '/api' && $method == 'GET') {
     $loginController->VerificaLoginAluno();
 } elseif ($uri == '/api/login/professor' && $method == 'POST') {
     $loginController->VerificaLoginProfessor();
+} elseif ($uri == '/api/codigoconfirmacao' && $method == 'POST') {
+    $emailController->enviarCodigoConfirmacao();
 } elseif ($uri == '/api/projetos/cadastrar' && $method == 'POST') {
     $cadastroProjetoController->cadastroProjeto();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
