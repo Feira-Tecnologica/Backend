@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 07/04/2025 às 04:07
--- Versão do servidor: 10.4.32-MariaDB
--- Versão do PHP: 8.2.12
+-- Tempo de geração: 12-Maio-2025 às 17:26
+-- Versão do servidor: 10.4.27-MariaDB
+-- versão do PHP: 8.0.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -26,7 +26,7 @@ USE `feiratecnologica`;
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `alunos`
+-- Estrutura da tabela `alunos`
 --
 
 CREATE TABLE `alunos` (
@@ -39,7 +39,7 @@ CREATE TABLE `alunos` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `alunos`
+-- Extraindo dados da tabela `alunos`
 --
 
 INSERT INTO `alunos` (`id`, `RM`, `senha`, `email_institucional`, `disponibilidade`, `id_turma`) VALUES
@@ -49,20 +49,29 @@ INSERT INTO `alunos` (`id`, `RM`, `senha`, `email_institucional`, `disponibilida
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `fotos`
+-- Estrutura da tabela `imagem`
 --
 
-CREATE TABLE `fotos` (
-  `id` int(11) NOT NULL,
-  `foto` longblob NOT NULL,
-  `remetente` int(11) NOT NULL,
-  `publico` tinyint(1) NOT NULL
+CREATE TABLE `imagem` (
+  `id` int(12) NOT NULL,
+  `imagem` varchar(255) NOT NULL,
+  `id_projeto` int(15) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Extraindo dados da tabela `imagem`
+--
+
+INSERT INTO `imagem` (`id`, `imagem`, `id_projeto`) VALUES
+(1, 'imagem legal', 1),
+(2, 'imagem do projeto', 1),
+(3, 'imagem de teste', 2),
+(4, 'ultima imagem', 3);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `notas`
+-- Estrutura da tabela `notas`
 --
 
 CREATE TABLE `notas` (
@@ -76,7 +85,7 @@ CREATE TABLE `notas` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `professores`
+-- Estrutura da tabela `professores`
 --
 
 CREATE TABLE `professores` (
@@ -87,7 +96,7 @@ CREATE TABLE `professores` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `professores`
+-- Extraindo dados da tabela `professores`
 --
 
 INSERT INTO `professores` (`id`, `matricula`, `email`, `senha`) VALUES
@@ -97,7 +106,7 @@ INSERT INTO `professores` (`id`, `matricula`, `email`, `senha`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `projetos`
+-- Estrutura da tabela `projetos`
 --
 
 CREATE TABLE `projetos` (
@@ -111,7 +120,7 @@ CREATE TABLE `projetos` (
 -- --------------------------------------------------------
 
 --
--- Estrutura para tabela `turmas`
+-- Estrutura da tabela `turmas`
 --
 
 CREATE TABLE `turmas` (
@@ -120,7 +129,7 @@ CREATE TABLE `turmas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Despejando dados para a tabela `turmas`
+-- Extraindo dados da tabela `turmas`
 --
 
 INSERT INTO `turmas` (`id`, `nome_turma`) VALUES
@@ -131,7 +140,7 @@ INSERT INTO `turmas` (`id`, `nome_turma`) VALUES
 --
 
 --
--- Índices de tabela `alunos`
+-- Índices para tabela `alunos`
 --
 ALTER TABLE `alunos`
   ADD PRIMARY KEY (`id`),
@@ -140,14 +149,13 @@ ALTER TABLE `alunos`
   ADD KEY `id_turma` (`id_turma`);
 
 --
--- Índices de tabela `fotos`
+-- Índices para tabela `imagem`
 --
-ALTER TABLE `fotos`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `remetente` (`remetente`);
+ALTER TABLE `imagem`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices de tabela `notas`
+-- Índices para tabela `notas`
 --
 ALTER TABLE `notas`
   ADD PRIMARY KEY (`id`),
@@ -155,7 +163,7 @@ ALTER TABLE `notas`
   ADD KEY `id_professor` (`id_professor`);
 
 --
--- Índices de tabela `professores`
+-- Índices para tabela `professores`
 --
 ALTER TABLE `professores`
   ADD PRIMARY KEY (`id`),
@@ -163,7 +171,7 @@ ALTER TABLE `professores`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Índices de tabela `projetos`
+-- Índices para tabela `projetos`
 --
 ALTER TABLE `projetos`
   ADD PRIMARY KEY (`id_grupo`),
@@ -171,13 +179,13 @@ ALTER TABLE `projetos`
   ADD UNIQUE KEY `numero_projeto` (`numero_projeto`);
 
 --
--- Índices de tabela `turmas`
+-- Índices para tabela `turmas`
 --
 ALTER TABLE `turmas`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT para tabelas despejadas
+-- AUTO_INCREMENT de tabelas despejadas
 --
 
 --
@@ -187,10 +195,10 @@ ALTER TABLE `alunos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT de tabela `fotos`
+-- AUTO_INCREMENT de tabela `imagem`
 --
-ALTER TABLE `fotos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `imagem`
+  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `notas`
@@ -217,23 +225,17 @@ ALTER TABLE `turmas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- Restrições para tabelas despejadas
+-- Restrições para despejos de tabelas
 --
 
 --
--- Restrições para tabelas `alunos`
+-- Limitadores para a tabela `alunos`
 --
 ALTER TABLE `alunos`
   ADD CONSTRAINT `alunos_ibfk_1` FOREIGN KEY (`id_turma`) REFERENCES `turmas` (`id`) ON DELETE CASCADE;
 
 --
--- Restrições para tabelas `fotos`
---
-ALTER TABLE `fotos`
-  ADD CONSTRAINT `fotos_ibfk_1` FOREIGN KEY (`remetente`) REFERENCES `alunos` (`id`) ON DELETE CASCADE;
-
---
--- Restrições para tabelas `notas`
+-- Limitadores para a tabela `notas`
 --
 ALTER TABLE `notas`
   ADD CONSTRAINT `notas_ibfk_1` FOREIGN KEY (`id_grupo`) REFERENCES `projetos` (`id_grupo`) ON DELETE CASCADE,
