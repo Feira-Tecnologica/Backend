@@ -3,7 +3,7 @@ class ImageController {
     public function todasFotos() {
         require_once __DIR__ . '/../Config/connection.php';
 
-        $stmt = $conn->prepare("SELECT * FROM imagem");
+        $stmt = $conn->prepare("SELECT imagem FROM imagem");
         $stmt->execute();
         $fotos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -23,7 +23,7 @@ class ImageController {
             return;
         }
 
-        $stmt = $conn->prepare("SELECT * FROM imagem WHERE id_projeto = :id_projeto");
+        $stmt = $conn->prepare("SELECT imagem FROM imagem WHERE id_projeto = :id_projeto");
         $stmt->bindParam(':id_projeto', $id_projeto, PDO::PARAM_INT);
         $stmt->execute();
         $fotos = $stmt->fetchAll(PDO::FETCH_ASSOC);
