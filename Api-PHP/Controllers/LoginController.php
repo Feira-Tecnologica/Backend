@@ -1,4 +1,7 @@
 <?php
+    /**
+     * @OA\PathItem(path="/api/login")
+     */
     class LoginController {
         public function VerificaLoginAluno() {
             require_once __DIR__ . '/../Config/connection.php';
