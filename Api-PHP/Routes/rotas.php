@@ -16,6 +16,7 @@ $cadastroProjetoController = new CadastroProjetoController();
 $emailController = new EmailController();
 $imageController = new ImageController();
 $uploadFotoController = new UploadFotoController();
+$cadastroUsuarioController = new CadastroUsuarioController();
 
 if ($uri == '/api' && $method == 'GET') {
     $exemploController->index();
@@ -37,7 +38,11 @@ if ($uri == '/api' && $method == 'GET') {
     $cadastroProjetoController->mostrarProjetos();
 } elseif ($uri == '/api/upload-foto' && $method == 'POST') {
     $uploadFotoController->upload();
-}else {
+} elseif ($uri == '/api/cadastrar/aluno' && $method == 'POST') {
+    $cadastroUsuarioController->cadastroAluno();
+} elseif ($uri == '/api/cadastrar/professor' && $method == 'POST') {
+    $cadastroUsuarioController->cadastroProfessor();
+} else {
     http_response_code(404);
     echo json_encode(["erro" => "Rota não encontrada"]);
 }
