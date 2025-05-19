@@ -14,6 +14,7 @@ $exemploController = new ExemploController();
 $loginController = new LoginController();
 $cadastroProjetoController = new CadastroProjetoController();
 $emailController = new EmailController();
+$imageController = new ImageController();
 $uploadFotoController = new UploadFotoController();
 
 if ($uri == '/api' && $method == 'GET') {
@@ -28,6 +29,10 @@ if ($uri == '/api' && $method == 'GET') {
     $emailController->enviarCodigoConfirmacao();
 } elseif ($uri == '/api/projetos/cadastrar' && $method == 'POST') {
     $cadastroProjetoController->cadastroProjeto();
+} elseif ($uri == '/api/imagem' && $method == 'GET') {
+    $imageController->todasFotos();
+} elseif ($uri == '/api/imagemprojeto' && $method == 'POST') {
+    $imageController->fotosPorGrupo();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
     $cadastroProjetoController->mostrarProjetos();
 } elseif ($uri == '/api/upload-foto' && $method == 'POST') {
