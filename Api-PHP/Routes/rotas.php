@@ -4,6 +4,7 @@ require_once __DIR__ . '/../Controllers/ExemploController.php';
 require_once __DIR__ . '/../Controllers/LoginController.php';
 require_once __DIR__ . '/../Controllers/EmailController.php';
 require_once __DIR__ . '/../Controllers/CadastroProjetosController.php';
+require_once __DIR__ . '/../Controllers/UploadFotoController.php';
 
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $uri = str_replace($scriptName, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -14,6 +15,7 @@ $loginController = new LoginController();
 $cadastroProjetoController = new CadastroProjetoController();
 $emailController = new EmailController();
 $imageController = new ImageController();
+$uploadFotoController = new UploadFotoController();
 
 if ($uri == '/api' && $method == 'GET') {
     $exemploController->index();
@@ -33,7 +35,9 @@ if ($uri == '/api' && $method == 'GET') {
     $imageController->fotosPorGrupo();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
     $cadastroProjetoController->mostrarProjetos();
-} else {
+} elseif ($uri == '/api/upload-foto' && $method == 'POST') {
+    $uploadFotoController->upload();
+}else {
     http_response_code(404);
     echo json_encode(["erro" => "Rota não encontrada"]);
 }
