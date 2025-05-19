@@ -31,6 +31,7 @@ USE `feiratecnologica`;
 
 CREATE TABLE `alunos` (
   `id` int(11) NOT NULL,
+  `nome` varchar(255) NOT NULL,
   `RM` varchar(20) NOT NULL,
   `senha` varchar(255) NOT NULL,
   `email_institucional` varchar(100) NOT NULL,
@@ -42,9 +43,9 @@ CREATE TABLE `alunos` (
 -- Despejando dados para a tabela `alunos`
 --
 
-INSERT INTO `alunos` (`id`, `RM`, `senha`, `email_institucional`, `disponibilidade`, `id_turma`) VALUES
-(1, '123456', '$2y$10$q3iHT.Y1CbwKdkeR4XT9HOBG.Nm9.18n26V.ZaJmPa6iMfiZNrvkq', 'aluno1@etec.sp.gov.br', 1, 1),
-(2, '654321', '$2y$10$xORrcq/dHQQ2LslKV.0/tuFZrAWnCh6TiEAR4MCj23cQ5cQT8./OG', 'aluno2@etec.sp.gov.br', 0, 1);
+INSERT INTO `alunos` (`id`, `nome`,`RM`, `senha`, `email_institucional`, `disponibilidade`, `id_turma`) VALUES
+(1,'Kevyn Marques Santana', '123456', '$2y$10$q3iHT.Y1CbwKdkeR4XT9HOBG.Nm9.18n26V.ZaJmPa6iMfiZNrvkq', 'aluno1@etec.sp.gov.br', 1, 1),
+(2, 'Gabriel Caspirro Demarchi','654321', '$2y$10$xORrcq/dHQQ2LslKV.0/tuFZrAWnCh6TiEAR4MCj23cQ5cQT8./OG', 'aluno2@etec.sp.gov.br', 0, 1);
 
 -- --------------------------------------------------------
 
