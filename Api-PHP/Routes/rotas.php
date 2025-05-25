@@ -3,8 +3,10 @@
 require_once __DIR__ . '/../Controllers/ExemploController.php';
 require_once __DIR__ . '/../Controllers/LoginController.php';
 require_once __DIR__ . '/../Controllers/EmailController.php';
+require_once __DIR__ . '/../Controllers/CadastroUsuarioController.php';
 require_once __DIR__ . '/../Controllers/CadastroProjetosController.php';
-require_once __DIR__ . '/../Controllers/UploadFotoController.php';
+require_once __DIR__ . '/../Controllers/UploadController.php';
+require_once __DIR__ . '/../Controllers/ImageController.php';
 
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $uri = str_replace($scriptName, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
