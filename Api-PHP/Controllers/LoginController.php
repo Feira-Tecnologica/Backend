@@ -14,7 +14,7 @@
                 return;
             }
 
-            $stmt = $conn->prepare("SELECT * FROM alunos WHERE RM = :rm AND email_institucional = :email");
+            $stmt = $conn->prepare("SELECT * FROM aluno WHERE RM = :rm AND email_institucional = :email");
             $stmt->bindParam(':rm', $rm);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
@@ -39,30 +39,28 @@
 
             $matricula = $dados_recebidos['matricula'] ?? '';
             $email = $dados_recebidos['email'] ?? '';
-            $senha = $dados_recebidos['senha'] ?? '';
 
-            if(empty($matricula) || empty($senha) || empty($email)){
+            if(empty($matricula) || empty($email)){
                 http_response_code(400);
                 echo json_encode(["erro" => "Campo obrigatório não preenchido."]);
                 return;
             }
 
-            $stmt = $conn->prepare("SELECT * FROM professores WHERE matricula = :matricula AND email = :email");
+            $stmt = $conn->prepare("SELECT * FROM professor WHERE matricula = :matricula AND email = :email");
             $stmt->bindParam(':matricula', $matricula);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
 
             $professor = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($professor && password_verify($senha, $professor['senha'])) {
-                unset($professor['senha']);
+            if ($professor) {
                 echo json_encode([
                     "mensagem" => "Login bem-sucedido",
                     "usuario" => $professor
                 ]);
             } else {
                 http_response_code(401);
-                echo json_encode(["erro" => "Email ou senha inválidos"]);
+                echo json_encode(["erro" => "Campo preenchido inválido"]);
             }
         }
     }

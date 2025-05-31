@@ -15,7 +15,6 @@ $method = $_SERVER['REQUEST_METHOD'];
 $exemploController = new ExemploController();
 $loginController = new LoginController();
 $cadastroProjetoController = new CadastroProjetoController();
-$emailController = new EmailController();
 $imageController = new ImageController();
 $uploadFotoController = new UploadFotoController();
 $cadastroUsuarioController = new CadastroUsuarioController();
@@ -28,8 +27,6 @@ if ($uri == '/api' && $method == 'GET') {
     $loginController->VerificaLoginAluno();
 } elseif ($uri == '/api/login/professor' && $method == 'POST') {
     $loginController->VerificaLoginProfessor();
-} elseif ($uri == '/api/codigoconfirmacao' && $method == 'POST') {
-    $emailController->enviarCodigoConfirmacao();
 } elseif ($uri == '/api/projetos/cadastrar' && $method == 'POST') {
     $cadastroProjetoController->cadastroProjeto();
 } elseif ($uri == '/api/imagem' && $method == 'GET') {
