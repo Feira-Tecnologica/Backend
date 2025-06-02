@@ -1,12 +1,19 @@
 <?php
+
 class CadastroUsuarioController {
     public function cadastroAluno() {
         require_once __DIR__ . '/../Config/connection.php';
+        require_once __DIR__ . '/../Controllers/EmailController.php';
+
         $dados = json_decode(file_get_contents('php://input'), true);
+        $emailController = new EmailController();
 
         $nome = $dados['nome'] ?? '';
         $email = $dados['email'] ?? '';
         $rm = $dados['rm'] ?? '';
+        $id = $dados['id'] ?? '';
+        $id_turma = $dados['turma'] ?? '';
+        $disponivel = false;
 
         if(empty($nome) || empty($email) || empty($rm)) {
             http_response_code(400);
@@ -14,11 +21,16 @@ class CadastroUsuarioController {
             return;
         }
 
-     
-        $stmt = $conn->prepare("INSERT INTO alunos (nome, email, rm) VALUES (:nome, :email, :rm)");
+        $senha = password_hash($emailController->enviarCodigoConfirmacao($nome, $email), PASSWORD_DEFAULT);
+
+        $stmt = $conn->prepare("INSERT INTO aluno (id_aluno, nome_aluno, email_institucional, rm, id_turma, disponivel, senha) VALUES (:id, :nome, :email, :rm, :id_turma, :disponivel, :senha)");
+        $stmt->bindParam(':id', $id);
         $stmt->bindParam(':nome', $nome);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':rm', $rm);
+        $stmt->bindParam(':senha', $senha);
+        $stmt->bindParam(':id_turma', $id_turma);
+        $stmt->bindParam(':disponivel', $disponivel);
 
         if ($stmt->execute()) {
             http_response_code(201);
@@ -32,21 +44,20 @@ class CadastroUsuarioController {
     public function cadastroProfessor() {
         require_once __DIR__ . '/../Config/connection.php';
         $dados = json_decode(file_get_contents('php://input'), true);
-        $nomeprof = $dados['nomeprof'] ?? '';
         $matricula = $dados['matricula'] ?? '';
-        $senhaprof = $dados['senhaprof'] ?? '';
+        $email = $dados['email'] ?? '';
+        $id = $dados['id'] ?? '';
 
-        if(empty($nomeprof) || empty($matricula) || empty($senhaprof)) {
+        if(empty($matricula) || empty($email)) {
             http_response_code(400);
             echo json_encode(["erro" => "Preencha todos os campos corretamente."]);
             return;
         }
-
   
-        $stmt = $conn->prepare("INSERT INTO professor (nomeprof, matricula, senhaprof) VALUES (:nomeprof, :matricula, :senhaprof)");
-        $stmt->bindParam(':nomeprof', $nomeprof);
+        $stmt = $conn->prepare("INSERT INTO professor (id_professor, matricula, email) VALUES (:id, :matricula, :email)");
+        $stmt->bindParam(':id', $id);
         $stmt->bindParam(':matricula', $matricula);
-        $stmt->bindParam(':senhaprof', $senhaprof);
+        $stmt->bindParam(':email', $email);
 
         if ($stmt->execute()) {
             http_response_code(201);
@@ -58,3 +69,5 @@ class CadastroUsuarioController {
     }
 }
 ?>
+
+

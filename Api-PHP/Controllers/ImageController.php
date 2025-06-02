@@ -3,7 +3,7 @@ class ImageController {
     public function todasFotos() {
         require_once __DIR__ . '/../Config/connection.php';
 
-        $stmt = $conn->prepare("SELECT imagem FROM imagem");
+        $stmt = $conn->prepare("SELECT png FROM foto");
         $stmt->execute();
         $fotos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
