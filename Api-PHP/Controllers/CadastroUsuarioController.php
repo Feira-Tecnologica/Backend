@@ -11,6 +11,9 @@ class CadastroUsuarioController {
         $nome = $dados['nome'] ?? '';
         $email = $dados['email'] ?? '';
         $rm = $dados['rm'] ?? '';
+        $id = $dados['id'] ?? '';
+        $id_turma = $dados['turma'] ?? '';
+        $disponivel = false;
 
         if(empty($nome) || empty($email) || empty($rm)) {
             http_response_code(400);
@@ -20,23 +23,14 @@ class CadastroUsuarioController {
 
         $senha = password_hash($emailController->enviarCodigoConfirmacao($nome, $email), PASSWORD_DEFAULT);
 
-        $reqIds = $conn->prepare("SELECT id_aluno FROM aluno");
-        $reqIds->execute();
-        $ids_alunos = $reqIds->fetchAll(PDO::FETCH_ASSOC);
-
-        $id = 1;
-        for($i = 0; $i < count($ids_alunos); $i++){
-            if ($id <= (int)$ids_alunos[$i]['id_aluno']){
-                $id = (int)$ids_alunos[$i]['id_aluno'] + 1;
-            }
-        }
-
-        $stmt = $conn->prepare("INSERT INTO aluno (id_aluno, nome_aluno, email_institucional, rm, senha) VALUES (:id, :nome, :email, :rm, :senha)");
+        $stmt = $conn->prepare("INSERT INTO aluno (id_aluno, nome_aluno, email_institucional, rm, id_turma, disponivel, senha) VALUES (:id, :nome, :email, :rm, :id_turma, :disponivel, :senha)");
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':nome', $nome);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':rm', $rm);
         $stmt->bindParam(':senha', $senha);
+        $stmt->bindParam(':id_turma', $id_turma);
+        $stmt->bindParam(':disponivel', $disponivel);
 
         if ($stmt->execute()) {
             http_response_code(201);
@@ -52,22 +46,12 @@ class CadastroUsuarioController {
         $dados = json_decode(file_get_contents('php://input'), true);
         $matricula = $dados['matricula'] ?? '';
         $email = $dados['email'] ?? '';
+        $id = $dados['id'] ?? '';
 
         if(empty($matricula) || empty($email)) {
             http_response_code(400);
             echo json_encode(["erro" => "Preencha todos os campos corretamente."]);
             return;
-        }
-
-        $reqIds = $conn->prepare("SELECT id_professor FROM professor");
-        $reqIds->execute();
-        $ids_profs = $reqIds->fetchAll(PDO::FETCH_ASSOC);
-
-        $id = 1;
-        for($i = 0; $i < count($ids_profs); $i++){
-            if ($id <= (int)$ids_profs[$i]['id_professor']){
-                $id = (int)$ids_profs[$i]['id_professor'] + 1;
-            }
         }
   
         $stmt = $conn->prepare("INSERT INTO professor (id_professor, matricula, email) VALUES (:id, :matricula, :email)");
