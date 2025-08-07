@@ -8,6 +8,7 @@ require_once __DIR__ . '/../Controllers/CadastroProjetosController.php';
 require_once __DIR__ . '/../Controllers/UploadController.php';
 require_once __DIR__ . '/../Controllers/ImageController.php';
 require_once __DIR__ . '/../Controllers/NotasController.php';
+require_once __DIR__ . '/../Controllers/SenhaUsuarioController.php';
 
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $uri = str_replace($scriptName, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -20,6 +21,7 @@ $imageController = new ImageController();
 $uploadFotoController = new UploadFotoController();
 $cadastroUsuarioController = new CadastroUsuarioController();
 $notaController = new NotasController();
+$senhaUsuarioController = new SenhaUsuarioController();
 
 if ($uri == '/api' && $method == 'GET') {
     $exemploController->index();
@@ -29,6 +31,10 @@ if ($uri == '/api' && $method == 'GET') {
     $loginController->VerificaLoginAluno();
 } elseif ($uri == '/api/login/professor' && $method == 'POST') {
     $loginController->VerificaLoginProfessor();
+} elseif($uri == '/api/senha/enviar' && $method == 'POST'){
+    $senhaUsuarioController->EnviarSenha();
+} elseif($uri == '/api/senha/trocar' && $method == 'POST'){
+    $senhaUsuarioController->TrocarSenha();
 } elseif ($uri == '/api/projetos/cadastrar' && $method == 'POST') {
     $cadastroProjetoController->cadastroProjeto();
 } elseif ($uri == '/api/imagem' && $method == 'GET') {
