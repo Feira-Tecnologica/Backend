@@ -17,6 +17,8 @@ class NotasController
         $oralidade = floatval($dados['oralidade'] ?? null);
         $comentario = $dados['comentario'] ?? '';
         $organizacao = $dados['organizacao'] ?? '';
+        $id_professor = $dados['id_professor'] ?? '';
+        $id_projeto = $dados['id_projeto'] ?? '';
 
         if (
             is_null($id_nota) ||
@@ -25,7 +27,9 @@ class NotasController
             is_null($abordagem) ||
             is_null($dominio) ||
             is_null($postura) ||
-            is_null($oralidade)
+            is_null($oralidade) ||
+            is_null($id_professor) ||
+            is_null($id_projeto) 
         ) {
             http_response_code(400);
             echo json_encode(["erro" => "Preencha todas as notas obrigatórias."]);
@@ -41,7 +45,10 @@ class NotasController
                 id_nota, criatividade, capricho, abordagem, dominio, postura, oralidade, comentario, organizacao
             ) VALUES (
                 :id_nota, :criatividade, :capricho, :abordagem, :dominio, :postura, :oralidade, :comentario, :organizacao
-            )
+            );
+
+            UPDATE professor SET id_nota = :id_nota WHERE id_professor = :id_professor;
+            UPDATE projeto SET id_nota = :id_nota WHERE id_projeto = :id_projeto;
         ");
 
         $stmt->bindParam(':id_nota', $id_nota, PDO::PARAM_INT);
@@ -53,6 +60,8 @@ class NotasController
         $stmt->bindParam(':oralidade', $oralidade);
         $stmt->bindParam(':comentario', $comentario);
         $stmt->bindParam(':organizacao', $organizacao);
+        $stmt->bindParam(':id_professor', $id_professor);
+        $stmt->bindParam(':id_projeto', $id_projeto);
 
         if ($stmt->execute()) {
             http_response_code(201);
@@ -65,6 +74,8 @@ class NotasController
             http_response_code(500);
             echo json_encode(["erro" => "Erro ao cadastrar nota."]);
         }
+
+
     }
 
     private function calcularMencao($media)

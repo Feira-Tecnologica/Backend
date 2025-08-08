@@ -1,51 +1,147 @@
 <?php
 //Aqui é onde a API começa, você cria um objeto do Controller e dentro desse objeto você vai programar as funções 
-    class CadastroProjetoController {
-        public function cadastroProjeto() {
-            //aqui é feita a conexão com o banco 
-            //caso seja nescessário mudar a conectado com o banco, é nescessário mexer no .ENV
-            require_once __DIR__ . '/../Config/connection.php';
-            $dados = json_decode(file_get_contents('php://input'), true);
+class CadastroProjetoController
+{
+    public function cadastroProjeto()
+    {
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
 
-            //aqui se criam as variáveis 
-            //por ser um insert os valores serão atribuídos depois,seja via FORMS no front,ou através do JSON no teste da API
-            $cod = $dados['cod'] ?? '';
-            $id = $dados['id_grupo'] ?? '';
-            $integrantes = $dados['integrantes'] ?? '';
+        // Captura os valores enviados no payload
+        $id_projeto = $dados['id_projeto'] ?? '';
+        $titulo_projeto = $dados['titulo_projeto'] ?? '';
+        $descricao = $dados['descricao'] ?? '';
+        $bloco = $dados['bloco'] ?? '';
+        $sala = $dados['sala'] ?? '';
+        $posicao = $dados['posicao'] ?? null;
+        $orientador = $dados['orientador'] ?? '';
+        $turma = $dados['turma'] ?? '';
+        $id_nota = $dados['id_nota'] ?? null;
 
-            //retorna um erro caso os valores não sejam preenchidos corretamente 
-            if(empty($cod) || empty($id) || empty($integrantes)) {
-                http_response_code(400);
-                echo json_encode(["erro" => "Preencha todos os campos corretamente."]);
-                return;
-            }
+        // Validação simples (exemplo: alguns campos obrigatórios)
+        if (empty($id_projeto) || empty($titulo_projeto) || empty($descricao)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+            exit;
+        }
 
-            //aqui é feito o insert na tabela do banco
-            $stmt = $conn->prepare("INSERT INTO projetos (cod, id_grupo, integrantes) VALUES (:cod, :id_grupo, :integrantes)");
-            //o ':cod' faz uma réplica do valor $cod através do bindParam
-            $stmt->bindParam(':cod', $cod);
-            $stmt->bindParam(':id_grupo', $id);
-            $stmt->bindParam(':integrantes', $integrantes);
-            //basicamente aquilo as variáveis com : na frente está pegando os valores das variáveis $ e inserindo no banco
+        try {
+            $stmt = $conn->prepare("
+                    INSERT INTO projeto (
+                        id_projeto, titulo_projeto, descricao, bloco, sala, posicao, orientador, turma, id_nota
+                    ) VALUES (
+                        :id_projeto, :titulo_projeto, :descricao, :bloco, :sala, :posicao, :orientador, :turma, :id_nota
+                    )
+                ");
+
+            $stmt->bindParam(':id_projeto', $id_projeto);
+            $stmt->bindParam(':titulo_projeto', $titulo_projeto);
+            $stmt->bindParam(':descricao', $descricao);
+            $stmt->bindParam(':bloco', $bloco);
+            $stmt->bindParam(':sala', $sala);
+            $stmt->bindParam(':posicao', $posicao, PDO::PARAM_INT);
+            $stmt->bindParam(':orientador', $orientador);
+            $stmt->bindParam(':turma', $turma);
+            $stmt->bindParam(':id_nota', $id_nota, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
-                http_response_code(201);
-                echo json_encode(["mensagem" => "Projeto cadastrado com sucesso."]);
+                echo json_encode(['status' => 'success', 'message' => 'Projeto cadastrado com sucesso.']);
             } else {
                 http_response_code(500);
-                echo json_encode(["erro" => "Erro ao cadastrar projeto."]);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao cadastrar projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
+        }
+    }
+
+
+    public function mostrarProjetos()
+    {
+        require_once __DIR__ . '/../Config/connection.php';
+
+        //aqui é a mesma coisa, porém dessa vez fazendo um GET invés de um POST,apenas puxando valores do banco 
+        $stmt = $conn->prepare("SELECT * FROM projeto");
+        $stmt->execute();
+        $projetos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo json_encode($projetos);
+    }
+
+    public function atualizarProjeto() {
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        $id_projeto = $dados['id_projeto'] ?? null;
+        if (empty($id_projeto)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Informe o id_projeto.']);
+            exit;
+        }
+
+        // Campos possíveis (exceto PK)
+        $colunas = [
+            'titulo_projeto' => PDO::PARAM_STR,
+            'descricao'      => PDO::PARAM_STR,
+            'bloco'          => PDO::PARAM_STR,
+            'sala'           => PDO::PARAM_STR,
+            'posicao'        => PDO::PARAM_INT,
+            'orientador'     => PDO::PARAM_STR,
+            'turma'          => PDO::PARAM_STR,
+            'id_nota'        => PDO::PARAM_INT,
+        ];
+
+        // Monta SET dinamicamente apenas com o que veio no payload
+        $setParts = [];
+        $binds = [];
+        foreach ($colunas as $col => $type) {
+            if (array_key_exists($col, $dados)) {
+                $setParts[] = "$col = :$col";
+                $binds[] = ['name' => $col, 'value' => $dados[$col], 'type' => $type];
             }
         }
 
-        public function mostrarProjetos() {
-            require_once __DIR__ . '/../Config/connection.php';
+        if (empty($setParts)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Nenhum campo para atualizar.']);
+            exit;
+        }
 
-            //aqui é a mesma coisa, porém dessa vez fazendo um GET invés de um POST,apenas puxando valores do banco 
-            $stmt = $conn->prepare("SELECT * FROM projetos");
-            $stmt->execute();
-            $projetos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "UPDATE projeto SET " . implode(', ', $setParts) . " WHERE id_projeto = :id_projeto";
+            $stmt = $conn->prepare($sql);
 
-            echo json_encode($projetos);
+            // Binds dos campos variáveis
+            foreach ($binds as $b) {
+                if (is_null($b['value'])) {
+                    $stmt->bindValue(':' . $b['name'], null, PDO::PARAM_NULL);
+                } else {
+                    if ($b['type'] === PDO::PARAM_INT) {
+                        $stmt->bindValue(':' . $b['name'], (int)$b['value'], PDO::PARAM_INT);
+                    } else {
+                        $stmt->bindValue(':' . $b['name'], $b['value'], PDO::PARAM_STR);
+                    }
+                }
+            }
+
+            // Bind do identificador
+            $stmt->bindValue(':id_projeto', $id_projeto);
+
+            if ($stmt->execute()) {
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => 'Projeto atualizado com sucesso.',
+                    'rows_affected' => $stmt->rowCount()
+                ]);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao atualizar projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
         }
     }
+}
 ?>
