@@ -1,6 +1,7 @@
 <?php
 
     class PostagemController {
+        
         public function criarPostagem() {
             require_once __DIR__ . '/../Config/connection.php';
 
