@@ -160,4 +160,22 @@
         }
     }
 
+    
+    // Exemplo de uso via requisição HTTP:
+
+        // Exemplo de chamada AJAX/fetch
+        
+        // fetch('api/postagem/deletar', {
+        //     method: 'DELETE',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({
+        //         id_postagem: 123
+        //     })
+        // })
+        // .then(response => response.json())
+        // .then(data => console.log(data));
+
+
 ?>
