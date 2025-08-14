@@ -8,6 +8,9 @@ require_once __DIR__ . '/../Controllers/CadastroProjetosController.php';
 require_once __DIR__ . '/../Controllers/PostagemController.php';
 require_once __DIR__ . '/../Controllers/NotasController.php';
 require_once __DIR__ . '/../Controllers/SenhaUsuarioController.php';
+require_once __DIR__ . '/../Controllers/UsuarioController.php';
+require_once __DIR__ . '/../Controllers/ODSController.php';
+require_once __DIR__ . '/../Controllers/TurmaController.php';
 
 $scriptName = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
 $uri = str_replace($scriptName, '', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
@@ -20,11 +23,14 @@ $postagemController = new PostagemController();
 $cadastroUsuarioController = new CadastroUsuarioController();
 $notaController = new NotasController();
 $senhaUsuarioController = new SenhaUsuarioController();
+$usuarioController = new UsuarioController();
+$odsController = new ODSController();
+$turmaController = new TurmaController();
 
 if ($uri == '/api' && $method == 'GET') {
     $exemploController->index();
 } elseif ($uri == '/api/usuarios' && $method == 'GET') {
-    $exemploController->listarUsuarios();
+    $usuarioController->listarUsuarios();
 } elseif ($uri == '/api/login/aluno' && $method == 'POST') {
     $loginController->VerificaLoginAluno();
 } elseif ($uri == '/api/login/professor' && $method == 'POST') {
@@ -35,10 +41,8 @@ if ($uri == '/api' && $method == 'GET') {
     $senhaUsuarioController->TrocarSenha();
 } elseif ($uri == '/api/projetos/cadastrar' && $method == 'POST') {
     $cadastroProjetoController->cadastroProjeto();
-} elseif ($uri == '/api/imagem' && $method == 'GET') {
-    $postagemController->todasFotos();
-} elseif ($uri == '/api/imagemprojeto' && $method == 'POST') {
-    $postagemController->fotosPorGrupo();
+} elseif ($uri == '/api/postagem/deletar' && $method == 'DELETE') {
+    $postagemController->DeletarPostagem();
 } elseif ($uri == '/api/postagem/criar' && $method == 'POST') {
     $postagemController->criarPostagem();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
@@ -51,6 +55,10 @@ if ($uri == '/api' && $method == 'GET') {
     $cadastroUsuarioController->cadastroProfessor();
 } else if ($uri == '/api/notas/cadastrar' && $method == 'POST'){
     $notaController->cadastroNota();
+} else if ($uri == '/api/ods' && $method == 'GET'){
+    $odsController->listarODS();
+} else if ($uri == '/api/turmas' && $method == 'GET'){
+    $turmaController->Turmas();
 } else {
     http_response_code(404);
     echo json_encode(["erro" => "Rota não encontrada"]);

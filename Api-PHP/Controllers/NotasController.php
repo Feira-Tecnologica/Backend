@@ -8,7 +8,6 @@ class NotasController
 
         $dados = json_decode(file_get_contents('php://input'), true);
 
-        $id_nota = $dados['id_nota'] ?? null;
         $criatividade = floatval($dados['criatividade'] ?? null);
         $capricho = floatval($dados['capricho'] ?? null);
         $abordagem = floatval($dados['abordagem'] ?? null);
@@ -21,7 +20,6 @@ class NotasController
         $id_projeto = $dados['id_projeto'] ?? '';
 
         if (
-            is_null($id_nota) ||
             is_null($criatividade) ||
             is_null($capricho) ||
             is_null($abordagem) ||
@@ -42,16 +40,12 @@ class NotasController
 
         $stmt = $conn->prepare("
             INSERT INTO nota (
-                id_nota, criatividade, capricho, abordagem, dominio, postura, oralidade, comentario, organizacao
+                criatividade, capricho, abordagem, dominio, postura, oralidade, comentario, organizacao, id_professor, id_projeto
             ) VALUES (
-                :id_nota, :criatividade, :capricho, :abordagem, :dominio, :postura, :oralidade, :comentario, :organizacao
+                :criatividade, :capricho, :abordagem, :dominio, :postura, :oralidade, :comentario, :organizacao, :id_professor, :id_projeto
             );
-
-            UPDATE professor SET id_nota = :id_nota WHERE id_professor = :id_professor;
-            UPDATE projeto SET id_nota = :id_nota WHERE id_projeto = :id_projeto;
         ");
 
-        $stmt->bindParam(':id_nota', $id_nota, PDO::PARAM_INT);
         $stmt->bindParam(':criatividade', $criatividade);
         $stmt->bindParam(':capricho', $capricho);
         $stmt->bindParam(':abordagem', $abordagem);

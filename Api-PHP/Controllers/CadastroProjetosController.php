@@ -16,7 +16,6 @@ class CadastroProjetoController
         $posicao = $dados['posicao'] ?? null;
         $orientador = $dados['orientador'] ?? '';
         $turma = $dados['turma'] ?? '';
-        $id_nota = $dados['id_nota'] ?? null;
 
         // Validação simples (exemplo: alguns campos obrigatórios)
         if (empty($id_projeto) || empty($titulo_projeto) || empty($descricao)) {
@@ -28,9 +27,9 @@ class CadastroProjetoController
         try {
             $stmt = $conn->prepare("
                     INSERT INTO projeto (
-                        id_projeto, titulo_projeto, descricao, bloco, sala, posicao, orientador, turma, id_nota
+                        id_projeto, titulo_projeto, descricao, bloco, sala, posicao, orientador, turma
                     ) VALUES (
-                        :id_projeto, :titulo_projeto, :descricao, :bloco, :sala, :posicao, :orientador, :turma, :id_nota
+                        :id_projeto, :titulo_projeto, :descricao, :bloco, :sala, :posicao, :orientador, :turma
                     )
                 ");
 
@@ -42,7 +41,6 @@ class CadastroProjetoController
             $stmt->bindParam(':posicao', $posicao, PDO::PARAM_INT);
             $stmt->bindParam(':orientador', $orientador);
             $stmt->bindParam(':turma', $turma);
-            $stmt->bindParam(':id_nota', $id_nota, PDO::PARAM_INT);
 
             if ($stmt->execute()) {
                 echo json_encode(['status' => 'success', 'message' => 'Projeto cadastrado com sucesso.']);
@@ -89,7 +87,6 @@ class CadastroProjetoController
             'posicao'        => PDO::PARAM_INT,
             'orientador'     => PDO::PARAM_STR,
             'turma'          => PDO::PARAM_STR,
-            'id_nota'        => PDO::PARAM_INT,
         ];
 
         // Monta SET dinamicamente apenas com o que veio no payload
