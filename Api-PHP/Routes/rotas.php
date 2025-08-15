@@ -45,6 +45,8 @@ if ($uri == '/api' && $method == 'GET') {
     $postagemController->DeletarPostagem();
 } elseif ($uri == '/api/postagem/criar' && $method == 'POST') {
     $postagemController->criarPostagem();
+} elseif ($uri == '/api/postagem' && $method == 'GET') {
+    $postagemController->listarPostagem();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
     $cadastroProjetoController->mostrarProjetos();
 } elseif ($uri == '/api/projetos/editar' && $method == 'POST') {

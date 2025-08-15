@@ -1,5 +1,24 @@
 <?php
 class PostagemController {
+
+    public function listarPostagem(){
+        require_once __DIR__ . '/../Config/connection.php';
+        header('Content-Type: application/json; charset=utf-8');
+
+        try {
+            $stmt = $conn->prepare("
+                SELECT id_postagem, legenda, data, TO_BASE64(png) AS png_b64
+                FROM postagem ORDER BY data DESC
+            ");
+            $stmt->execute();
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($rows, JSON_UNESCAPED_UNICODE);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(["erro" => $e->getMessage()]);
+        }
+    }
+
     public function criarPostagem(){
         require_once __DIR__ . '/../Config/connection.php';
 
