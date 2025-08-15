@@ -34,8 +34,8 @@ class NotasController
             return;
         }
 
-        // Cálculo da média sem salvar no banco (vai ter que mostrar no front pq n tem campo 'media' em 'notas')
-        $media = ($criatividade + $capricho + $abordagem + $dominio + $postura + $oralidade) / 6;
+        // Cálculo da média
+        $media = ($criatividade + $capricho + $abordagem + $dominio + $postura + $oralidade + $organizacao) / 7;
         $mencao = $this->calcularMencao($media);
 
         $stmt = $conn->prepare("
@@ -46,16 +46,19 @@ class NotasController
             );
         ");
 
+        // Atributos para a média
         $stmt->bindParam(':criatividade', $criatividade);
         $stmt->bindParam(':capricho', $capricho);
         $stmt->bindParam(':abordagem', $abordagem);
         $stmt->bindParam(':dominio', $dominio);
         $stmt->bindParam(':postura', $postura);
         $stmt->bindParam(':oralidade', $oralidade);
-        $stmt->bindParam(':comentario', $comentario);
         $stmt->bindParam(':organizacao', $organizacao);
+
+        // ID's e comentário do professor
         $stmt->bindParam(':id_professor', $id_professor);
         $stmt->bindParam(':id_projeto', $id_projeto);
+        $stmt->bindParam(':comentario', $comentario);
 
         if ($stmt->execute()) {
             http_response_code(201);
@@ -72,9 +75,15 @@ class NotasController
 
     }
 
+    // CRITÉRIO DE NOTAS
+    // I: 0 - 2,5
+    // R: 2,5 - 5
+    // B: 5 - 7,5
+    // MB: 7,5 - 10
+
     private function calcularMencao($media)
     {
-        if ($media < 5)
+        if ($media < 2.5 || $media > 0)
             return 'I';     // Insatisfatório
         if ($media < 7)
             return 'R';     // Regular
