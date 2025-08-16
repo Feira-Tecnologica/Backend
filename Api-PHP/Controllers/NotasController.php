@@ -14,8 +14,8 @@ class NotasController
         $dominio = floatval($dados['dominio'] ?? null);
         $postura = floatval($dados['postura'] ?? null);
         $oralidade = floatval($dados['oralidade'] ?? null);
+        $organizacao = floatval($dados['organizacao'] ?? null);
         $comentario = $dados['comentario'] ?? '';
-        $organizacao = $dados['organizacao'] ?? '';
         $id_professor = $dados['id_professor'] ?? '';
         $id_projeto = $dados['id_projeto'] ?? '';
 
@@ -26,6 +26,7 @@ class NotasController
             is_null($dominio) ||
             is_null($postura) ||
             is_null($oralidade) ||
+            is_null($organizacao) ||
             is_null($id_professor) ||
             is_null($id_projeto) 
         ) {
@@ -35,14 +36,13 @@ class NotasController
         }
 
         // Cálculo da média
-        $media = ($criatividade + $capricho + $abordagem + $dominio + $postura + $oralidade + $organizacao) / 7;
-        $mencao = $this->calcularMencao($media);
+        $media = round(($criatividade + $capricho + $abordagem + $dominio + $postura + $oralidade + $organizacao) / 7, 1);
 
         $stmt = $conn->prepare("
             INSERT INTO nota (
-                criatividade, capricho, abordagem, dominio, postura, oralidade, comentario, organizacao, id_professor, id_projeto
+                criatividade, capricho, abordagem, dominio, postura, oralidade, comentario, organizacao, media, id_professor, id_projeto
             ) VALUES (
-                :criatividade, :capricho, :abordagem, :dominio, :postura, :oralidade, :comentario, :organizacao, :id_professor, :id_projeto
+                :criatividade, :capricho, :abordagem, :dominio, :postura, :oralidade, :comentario, :organizacao, :media, :id_professor, :id_projeto
             );
         ");
 
@@ -55,7 +55,8 @@ class NotasController
         $stmt->bindParam(':oralidade', $oralidade);
         $stmt->bindParam(':organizacao', $organizacao);
 
-        // ID's e comentário do professor
+        // ID's, comentário do professor, e média
+        $stmt->bindParam(':media', $media);
         $stmt->bindParam(':id_professor', $id_professor);
         $stmt->bindParam(':id_projeto', $id_projeto);
         $stmt->bindParam(':comentario', $comentario);
@@ -64,31 +65,11 @@ class NotasController
             http_response_code(201);
             echo json_encode([
                 "mensagem" => "Nota cadastrada com sucesso.",
-                "media" => round($media, 2),
-                "mencao" => $mencao
+                "media" => $media
             ]);
         } else {
             http_response_code(500);
             echo json_encode(["erro" => "Erro ao cadastrar nota."]);
         }
-
-
-    }
-
-    // CRITÉRIO DE NOTAS
-    // I: 0 - 2,5
-    // R: 2,5 - 5
-    // B: 5 - 7,5
-    // MB: 7,5 - 10
-
-    private function calcularMencao($media)
-    {
-        if ($media < 2.5 || $media > 0)
-            return 'I';     // Insatisfatório
-        if ($media < 7)
-            return 'R';     // Regular
-        if ($media < 9)
-            return 'B';     // Bom
-        return 'MB';                    // Muito Bom
     }
 }
