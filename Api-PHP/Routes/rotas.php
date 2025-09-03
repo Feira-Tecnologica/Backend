@@ -49,8 +49,16 @@ if ($uri == '/api' && $method == 'GET') {
     $postagemController->listarPostagem();
 } elseif ($uri == '/api/projetos' && $method == 'GET') {
     $cadastroProjetoController->mostrarProjetos();
+} elseif ($uri == '/api/projetos/alunos' && $method == 'POST') {
+    $cadastroProjetoController->AlunosProjeto();
 } elseif ($uri == '/api/projetos/editar' && $method == 'POST') {
     $cadastroProjetoController->atualizarProjeto();
+} elseif ($uri == '/api/projetos/inserir-aluno' && $method == 'POST') {
+    $cadastroProjetoController->InserirAluno();
+} elseif ($uri == '/api/projetos/inserir-ods' && $method == 'POST') {
+    $cadastroProjetoController->InserirOds();
+} elseif ($uri == '/api/projetos/ods-projeto' && $method == 'POST') {
+    $cadastroProjetoController->OdsProjeto();
 } elseif ($uri == '/api/cadastrar/aluno' && $method == 'POST') {
     $cadastroUsuarioController->cadastroAluno();
 } elseif ($uri == '/api/cadastrar/professor' && $method == 'POST') {

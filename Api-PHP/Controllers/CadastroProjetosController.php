@@ -2,13 +2,83 @@
 //Aqui é onde a API começa, você cria um objeto do Controller e dentro desse objeto você vai programar as funções 
 class CadastroProjetoController
 {
+
+    public function AlunosProjeto(){
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        $id_projeto = $dados['id_projeto'];
+
+        if (empty($id_projeto)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+            exit;
+        }
+
+        try {
+            $stmt = $conn->prepare("
+                SELECT nome_aluno
+                FROM aluno
+                INNER JOIN projeto_aluno
+                ON aluno.id_aluno = projeto_aluno.id_aluno WHERE projeto_aluno.id_projeto = :id_projeto;
+            ");
+
+            $stmt->bindParam(':id_projeto', $id_projeto);
+
+            if ($stmt->execute()) {
+                $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($alunos, JSON_UNESCAPED_UNICODE);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao puxar alunos do projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
+        }
+    }
+
+    public function OdsProjeto(){
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        $id_projeto = $dados['id_projeto'];
+
+        if (empty($id_projeto)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+            exit;
+        }
+
+        try {
+            $stmt = $conn->prepare("
+                SELECT nome
+                FROM ods
+                INNER JOIN projeto_aluno_ods
+                ON ods.id_ods = projeto_aluno_ods.id_ods WHERE projeto_aluno_ods.id_projeto = :id_projeto;
+            ");
+
+            $stmt->bindParam(':id_projeto', $id_projeto);
+
+            if ($stmt->execute()) {
+                $ods = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                echo json_encode($ods, JSON_UNESCAPED_UNICODE);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao puxar ods do projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
+        }
+    }
+
     public function cadastroProjeto()
     {
         require_once __DIR__ . '/../Config/connection.php';
         $dados = json_decode(file_get_contents('php://input'), true);
 
         // Captura os valores enviados no payload
-        $id_projeto = $dados['id_projeto'] ?? '';
         $titulo_projeto = $dados['titulo_projeto'] ?? '';
         $descricao = $dados['descricao'] ?? '';
         $bloco = $dados['bloco'] ?? '';
@@ -18,7 +88,7 @@ class CadastroProjetoController
         $turma = $dados['turma'] ?? '';
 
         // Validação simples (exemplo: alguns campos obrigatórios)
-        if (empty($id_projeto) || empty($titulo_projeto) || empty($descricao)) {
+        if (empty($titulo_projeto) || empty($descricao)) {
             http_response_code(400);
             echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
             exit;
@@ -27,13 +97,12 @@ class CadastroProjetoController
         try {
             $stmt = $conn->prepare("
                     INSERT INTO projeto (
-                        id_projeto, titulo_projeto, descricao, bloco, sala, posicao, orientador, turma
+                        titulo_projeto, descricao, bloco, sala, posicao, orientador, turma
                     ) VALUES (
-                        :id_projeto, :titulo_projeto, :descricao, :bloco, :sala, :posicao, :orientador, :turma
+                        :titulo_projeto, :descricao, :bloco, :sala, :posicao, :orientador, :turma
                     )
                 ");
 
-            $stmt->bindParam(':id_projeto', $id_projeto);
             $stmt->bindParam(':titulo_projeto', $titulo_projeto);
             $stmt->bindParam(':descricao', $descricao);
             $stmt->bindParam(':bloco', $bloco);
@@ -134,6 +203,78 @@ class CadastroProjetoController
             } else {
                 http_response_code(500);
                 echo json_encode(['status' => 'error', 'message' => 'Erro ao atualizar projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
+        }
+    }
+
+    public function InserirAluno(){
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        $id_projeto = $dados['id_projeto'];
+        $id_aluno = $dados['id_aluno'];
+
+        if (empty($id_projeto) || empty($id_aluno)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+            exit;
+        }
+
+        try{
+            $stmt = $conn->prepare("
+                INSERT INTO projeto_aluno (
+                    id_projeto, id_aluno
+                ) VALUES (
+                    :id_projeto, :id_aluno
+                )
+            ");
+            $stmt->bindParam(':id_projeto', $id_projeto);
+            $stmt->bindParam(':id_aluno', $id_aluno);
+
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Aluno inserido no projeto com sucesso.']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao inserir aluno no projeto.']);
+            }
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'Erro no banco de dados: ' . $e->getMessage()]);
+        }
+    }
+
+    public function InserirOds(){
+        require_once __DIR__ . '/../Config/connection.php';
+        $dados = json_decode(file_get_contents('php://input'), true);
+
+        $id_projeto = $dados['id_projeto'];
+        $id_ods = $dados['id_ods'];
+
+        if (empty($id_projeto) || empty($id_ods)) {
+            http_response_code(400);
+            echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+            exit;
+        }
+
+        try{
+            $stmt = $conn->prepare("
+                INSERT INTO projeto_aluno_ods (
+                    id_projeto, id_ods
+                ) VALUES (
+                    :id_projeto, :id_ods
+                )
+            ");
+            $stmt->bindParam(':id_projeto', $id_projeto);
+            $stmt->bindParam(':id_ods', $id_ods);
+
+            if ($stmt->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Ods inserida no projeto com sucesso.']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao inserir Ods no projeto.']);
             }
         } catch (PDOException $e) {
             http_response_code(500);
