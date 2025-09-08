@@ -261,7 +261,7 @@ class CadastroProjetoController
 
         try{
             $stmt = $conn->prepare("
-                INSERT INTO projeto_aluno_ods (
+                INSERT INTO projeto_ods (
                     id_projeto, id_ods
                 ) VALUES (
                     :id_projeto, :id_ods
@@ -282,4 +282,5 @@ class CadastroProjetoController
         }
     }
 }
+
 ?>
